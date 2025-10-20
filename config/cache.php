@@ -1,4 +1,3 @@
-php artisan make:migration create_tb_items_table
 <?php
 
 use Illuminate\Support\Str;
