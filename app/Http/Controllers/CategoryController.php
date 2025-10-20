@@ -17,11 +17,7 @@ class CategoryController extends Controller
         $categories = Category::latest()->get();
 
         // Kirim data kategori ke view
-        // Sementara kita tampilkan dalam bentuk JSON untuk testing
-        return response()->json([
-            'message' => 'Data kategori berhasil diambil',
-            'data' => $categories
-        ]);
+        return view('categories.index', compact('categories'));
     }
 
     /**
@@ -29,7 +25,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -37,38 +33,59 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validasi input
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        // Buat kategori baru
+        Category::create($validated);
+
+        // Redirect ke index dengan pesan sukses
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dibuat.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
-        //
+        return view('categories.show', compact('category'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Category $category)
     {
-        //
+        return view('categories.edit', compact('category'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Category $category)
     {
-        //
+        // Validasi input
+        $validated = $request->validate([
+            'category_name' => 'required|string|max:255',
+        ]);
+
+        // Update kategori
+        $category->update($validated);
+
+        // Redirect ke index dengan pesan sukses
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diupdate.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');
     }
 }

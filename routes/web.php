@@ -28,8 +28,11 @@ Route::get('/', function () {
     return redirect()->route('items.index');
 });
 
-// Route resource untuk ItemController
+// Route untuk ItemController
 Route::resource('items', ItemController::class);
 
-// ROute resource untuk CategoryController
+// Route untuk CategoryController
 Route::resource('categories', CategoryController::class);
+
+// Route tambahan
+Route::get('/categories/{category}/ ', [CategoryController::class, 'items'])->name('categories.items');
