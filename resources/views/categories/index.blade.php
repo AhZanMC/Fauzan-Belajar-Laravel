@@ -39,16 +39,16 @@
                             <td class="text-center">
                                 <div class="btn-group" role="group" aria-label="Aksi Kategori">
                                     {{-- Tombol Detail --}}
-                                    <a href="{{ route('categories.show', $category->id_category) }}" class="btn btn-sm btn-info">Detail</a>
+                                    <a href="{{ route('categories.show', $category->id_category) }}" class="btn btn-sm btn-info mx-1">Detail</a>
                                     
                                     {{-- Tombol Edit --}}
-                                    <a href="{{ route('categories.edit', $category->id_category) }}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="{{ route('categories.edit', $category->id_category) }}" class="btn btn-sm btn-warning mx-1">Edit</a>
                                     
                                     {{-- Tombol Hapus (dengan form untuk keamanan) --}}
                                     <form action="{{ route('categories.destroy', $category->id_category) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak bisa dibatalkan.');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                        <button type="submit" class="btn btn-sm btn-danger mx-1">Hapus</button>
                                     </form>
                                 </div>
                             </td>
