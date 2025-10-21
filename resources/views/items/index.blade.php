@@ -38,12 +38,12 @@
                             <td>Rp {{ number_format($item->price, 2, ',', '.') }}</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    {{-- <a href="{{ route('items.show', $item->id_item)}}" class="btn btn-sm btn-info mx-1">Detail</a> --}}
-                                    <a href="{{ route('items.edit', $item->id_item)}}" class="btn btn-sm btn-warning mx-1">Edit</a>
+                                    <a href="{{ route('items.show', $item->id_item)}}" class="btn btn-sm btn-info">Detail</a>
+                                    <a href="{{ route('items.edit', $item->id_item)}}" class="btn btn-sm btn-warning">Edit</a>
                                     <form action="{{ route('items.destroy', $item->id_item) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus item ini?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger mx-1">Hapus</button>
+                                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                                     </form>
                                 </div>
                             </td>

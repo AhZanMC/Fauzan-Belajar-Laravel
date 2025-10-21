@@ -48,7 +48,7 @@
                                     <form action="{{ route('categories.destroy', $category->id_category) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak bisa dibatalkan.');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger mx-1">Hapus</button>
+                                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                                     </form>
                                 </div>
                             </td>
