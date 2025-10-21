@@ -34,7 +34,7 @@
                                 Belum ada barang di dalam kategori ini.
                             </td>
                         </tr>
-                    @forelse
+                    @endforelse
                 </tbody>
             </table>
         </div>

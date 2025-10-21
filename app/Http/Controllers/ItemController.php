@@ -2,109 +2,109 @@
 
 namespace App\Http\Controllers;
 
-// Panggil model Item
 use App\Models\Item;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan halaman utama dengan daftar barang.
+     */
+    public function home()
+    {
+        $items = Item::with('category')->latest()->get();
+        return view('home', compact('items'));
+    }
+
+    /**
+     * Menampilkan daftar semua barang (halaman kelola).
      */
     public function index()
     {
-        // ambil semua data item
         $items = Item::with('category')->latest()->get();
-
-        // Untuk sekarang, kita coba tampilkan dalam bentuk JSON dulu untuk testing
-        // return response()->json([
-        //     'message' => 'Data item berhasil diambil',
-        //     'data' => $items
-        // ]);
-        
-        // Kirim data items ke view
         return view('items.index', compact('items'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form untuk membuat barang baru.
      */
     public function create()
     {
-        // ambil daftar kategori untuk select di form (gunakan FQCN agar tidak perlu menambah use di atas)
-        $categories = \App\Models\Category::all();
-
+        $categories = Category::orderBy('category_name')->get();
         return view('items.create', compact('categories'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan barang baru ke database.
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        // Validasi input dari form
+        $request->validate([
+            'item_code' => 'required|string|max:50|unique:tb_items,item_code',
+            'item_name' => 'required|string|max:100',
+            'id_category' => 'nullable|exists:tb_categories,id_category',
+            'stock' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
-            'price' => 'nullable|numeric',
-            'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        $item = Item::create($validated);
+        // Simpan data baru
+        Item::create($request->all());
 
         return redirect()->route('items.index')
-            ->with('success', 'Item berhasil dibuat.');
+                         ->with('success', 'Barang baru berhasil ditambahkan.');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail satu barang.
      */
-    public function show(string $id)
+    public function show(Item $item)
     {
-        $item = Item::with('category')->findOrFail($id);
-
         return view('items.show', compact('item'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form untuk mengedit barang.
      */
-    public function edit(string $id)
+    public function edit(Item $item)
     {
-        $item = Item::findOrFail($id);
-        $categories = \App\Models\Category::all();
-
+        $categories = Category::orderBy('category_name')->get();
         return view('items.edit', compact('item', 'categories'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui data barang di database.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Item $item)
     {
-        $item = Item::findOrFail($id);
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        // Validasi input
+        $request->validate([
+            'item_code' => ['required', 'string', 'max:50', Rule::unique('tb_items')->ignore($item->id_item, 'id_item')],
+            'item_name' => 'required|string|max:100',
+            'id_category' => 'nullable|exists:tb_categories,id_category',
+            'stock' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
-            'price' => 'nullable|numeric',
-            'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        $item->update($validated);
+        // Update data
+        $item->update($request->all());
 
         return redirect()->route('items.index')
-            ->with('success', 'Item berhasil diupdate.');
+                         ->with('success', 'Data barang berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus barang dari database.
      */
-    public function destroy(string $id)
+    public function destroy(Item $item)
     {
-        $item = Item::findOrFail($id);
         $item->delete();
 
         return redirect()->route('items.index')
-            ->with('success', 'Item berhasil dihapus.');
+                         ->with('success', 'Data barang berhasil dihapus.');
     }
 }

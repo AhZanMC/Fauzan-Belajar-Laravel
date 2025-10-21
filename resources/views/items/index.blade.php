@@ -8,7 +8,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Daftar Barang</h1>
-        <a href="{{ route('categories.create') }}" class="btn btn-primary">Tambah Kategori Baru</a>
+        <a href="{{ route('items.create') }}" class="btn btn-primary">Tambah Item Baru</a>
     </div>
 
     <div class="card">

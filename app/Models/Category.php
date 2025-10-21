@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+// Import class ini
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
