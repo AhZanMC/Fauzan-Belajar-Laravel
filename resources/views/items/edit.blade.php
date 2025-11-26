@@ -1,92 +1,97 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Barang: ' . $item->item_name)
+@section('title', 'Edit Barang')
 
 @section('content')
-    <h1>Edit Barang: {{ $item->item_name }}</h1>
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Edit Barang: {{ $item->item_name }}</h1>
+            <a href="{{ route('items.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-150">
+                &larr; Kembali
+            </a>
+        </div>
 
-    <div class="card">
-        <div class="card-body">
-            {{-- Form akan mengirim data ke route 'items.update' dengan method POST, tapi kita palsukan sebagai PUT --}}
-            <form action="{{ route('items.update', $item->id_item) }}" method="POST">
-                @csrf
-                @method('PUT') {{-- Ini adalah method spoofing untuk request PUT/PATCH --}}
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 bg-white border-b border-gray-200">
+                <form action="{{ route('items.update', $item->id_item) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="item_code" class="form-label">Kode Barang</label>
-                        {{-- 'old()' akan memprioritaskan data lama dari sesi (jika validasi gagal), jika tidak ada, tampilkan data dari database --}}
-                        <input type="text" class="form-control @error('item_code') is-invalid @enderror" id="item_code" name="item_code" value="{{ old('item_code', $item->item_code) }}" required>
-                        @error('item_code')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="item_name" class="form-label">Nama Barang</label>
-                        <input type="text" class="form-control @error('item_name') is-invalid @enderror" id="item_name" name="item_name" value="{{ old('item_name', $item->item_name) }}" required>
-                        @error('item_name')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_category" class="form-label">Kategori</label>
-                    <select class="form-select @error('id_category') is-invalid @enderror" id="id_category" name="id_category">
-                        <option selected disabled value="">Pilih Kategori...</option>
-                        @foreach ($categories as $category)
-                            <option value="{{ $category->id_category }}" {{ old('id_category', $item->id_category) == $category->id_category ? 'selected' : '' }}>
-                                {{ $category->category_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('id_category')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Kode Barang -->
+                        <div>
+                            <label for="item_code" class="block text-sm font-medium text-gray-700">Kode Barang</label>
+                            <input type="text" name="item_code" id="item_code" value="{{ old('item_code', $item->item_code) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('item_code') border-red-500 @enderror">
+                            @error('item_code')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
-                    @enderror
-                </div>
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">Deskripsi</label>
-                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description', $item->description) }}</textarea>
-                    @error('description')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                        <!-- Nama Barang -->
+                        <div>
+                            <label for="item_name" class="block text-sm font-medium text-gray-700">Nama Barang</label>
+                            <input type="text" name="item_name" id="item_name" value="{{ old('item_name', $item->item_name) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('item_name') border-red-500 @enderror">
+                            @error('item_name')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
-                    @enderror
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="stock" class="form-label">Stok</label>
-                        <input type="number" class="form-control @error('stock') is-invalid @enderror" id="stock" name="stock" value="{{ old('stock', $item->stock) }}" required>
-                        @error('stock')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="price" class="form-label">Harga</label>
-                        <input type="number" step="0.01" class="form-control @error('price') is-invalid @enderror" id="price" name="price" value="{{ old('price', $item->price) }}" required>
-                        @error('price')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                </div>
+                        <!-- Kategori -->
+                        <div class="md:col-span-2">
+                            <label for="id_category" class="block text-sm font-medium text-gray-700">Kategori</label>
+                            <select id="id_category" name="id_category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                <option disabled value="">Pilih Kategori...</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id_category }}" {{ old('id_category', $item->id_category) == $category->id_category ? 'selected' : '' }}>
+                                        {{ $category->category_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('id_category')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                <div class="d-flex justify-content-end">
-                    <a href="{{ route('items.index') }}" class="btn btn-secondary me-2">Batal</a>
-                    <button type="submit" class="btn btn-primary">Update Barang</button>
-                </div>
-            </form>
+                        <!-- Deskripsi -->
+                        <div class="md:col-span-2">
+                            <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                            <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">{{ old('description', $item->description) }}</textarea>
+                            @error('description')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Stok -->
+                        <div>
+                            <label for="stock" class="block text-sm font-medium text-gray-700">Stok</label>
+                            <input type="number" name="stock" id="stock" value="{{ old('stock', $item->stock) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            @error('stock')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Harga -->
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-gray-700">Harga</label>
+                            <div class="relative mt-1 rounded-md shadow-sm">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <span class="text-gray-500 sm:text-sm">Rp</span>
+                                </div>
+                                <input type="number" name="price" id="price" value="{{ old('price', $item->price) }}" step="0.01" required class="block w-full rounded-md border-gray-300 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            </div>
+                            @error('price')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150">
+                            Update Barang
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @endsection
