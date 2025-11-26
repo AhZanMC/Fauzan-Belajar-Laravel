@@ -17,12 +17,20 @@ use App\Http\Controllers\ItemController;
 */
 
 Route::get('/', function () {
+    // kalo user dah login
+    if(Auth::check()){
+        return redirect()->route('dashboard');
+    }
     return view('welcome');
 });
 
 // Dashboard
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    // Ambil data di controller
+    $items = \App\Models\Item::latest()->get();
+    $categories = \App\Models\Category::latest()->get();
+    // kirim data ke view
+    return view('dashboard', compact('items', 'categories'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Halaman Kelola Data (Wajib Login)
@@ -31,12 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // CRUD Items
+    // Area CRUD
     Route::resource('items', ItemController::class);
-    // CRUD Categories
     Route::resource('categories', CategoryController::class);
-
-    Route::get('/', [ItemController::class, 'home'])->name('home');
 });
 
 require __DIR__.'/auth.php';
