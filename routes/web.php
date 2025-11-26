@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController; // Bawaan Laravel Breeze
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,13 +26,9 @@ Route::get('/', function () {
 });
 
 // Dashboard
-Route::get('/dashboard', function () {
-    // Ambil data di controller
-    $items = \App\Models\Item::latest()->get();
-    $categories = \App\Models\Category::latest()->get();
-    // kirim data ke view
-    return view('dashboard', compact('items', 'categories'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Halaman Kelola Data (Wajib Login)
 Route::middleware('auth')->group(function () {
