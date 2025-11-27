@@ -30,6 +30,100 @@
         </div>
     </div>
 
+    <!-- Filter Section -->
+    <div class="bg-white p-6 rounded-lg shadow-sm mb-6 border border-gray-200">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-700">Filter Katalog</h2>
+        </div>
+        
+        <!-- Pastikan route mengarah ke 'dashboard' -->
+        <form action="{{ route('dashboard') }}" method="GET">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                
+                <!-- Input Pencarian -->
+                <div class="md:col-span-4">
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Pencarian</label>
+                    <div class="relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" name="search" id="search" 
+                               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out" 
+                               placeholder="Cari kode atau nama barang..." 
+                               value="{{ request('search') }}">
+                    </div>
+                </div>
+
+                <!-- Filter Kategori -->
+                <div class="md:col-span-3">
+                    <label for="id_category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                    <div class="relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                        </div>
+                        <select name="id_category" id="id_category" class="block w-full pl-10 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition duration-150 ease-in-out">
+                            <option value="">Semua Kategori</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id_category }}" {{ request('id_category') == $category->id_category ? 'selected' : '' }}>
+                                    {{ $category->category_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filter Tanggal Mulai -->
+                <div class="md:col-span-2">
+                    <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Dari Tanggal</label>
+                    <input type="date" name="start_date" id="start_date" 
+                           value="{{ request('start_date') }}"
+                           max="{{ date('Y-m-d') }}"
+                           class="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out">
+                </div>
+
+                <!-- Filter Tanggal Akhir -->
+                <div class="md:col-span-2">
+                    <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Sampai Tanggal</label>
+                    <input type="date" name="end_date" id="end_date" 
+                           value="{{ request('end_date') }}"
+                           max="{{ date('Y-m-d') }}"
+                           class="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out">
+                </div>
+                
+                <!-- Tombol Filter -->
+                <div class="md:col-span-1 flex items-end">
+                    <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm transition duration-150 ease-in-out h-[38px] mt-6"> 
+                        Filter
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Reset & Per Page -->
+            <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    @if(request('search') || request('id_category') || request('start_date') || request('end_date') || request('per_page'))
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center text-sm text-red-500 hover:text-red-700 font-medium transition duration-150 ease-in-out">
+                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            Reset Filter
+                        </a>
+                    @endif
+                </div>
+
+                <div class="flex items-center mt-3 md:mt-0">
+                    <label for="per_page" class="text-sm text-gray-600 mr-2">Tampilkan:</label>
+                    <select name="per_page" id="per_page" onchange="this.form.submit()" 
+                            class="block w-24 py-1 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                    <span class="text-sm text-gray-600 ml-2">data</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <!-- Katalog Barang -->
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Katalog Barang Terbaru</h2>
@@ -98,5 +192,10 @@
                 </div>
             </div>
         @endforelse
+    </div>
+    
+    <!-- Pagination Links -->
+    <div class="mt-6 mb-12">
+        {{ $items->appends(request()->all())->links() }}
     </div>
 @endsection

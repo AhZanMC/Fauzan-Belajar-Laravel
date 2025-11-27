@@ -21,10 +21,57 @@ class ItemController extends Controller
     /**
      * Menampilkan daftar semua barang (halaman kelola).
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::with('category')->latest()->get();
-        return view('items.index', compact('items'));
+        //  Ambil semua input
+        $search = $request->input('search');
+        $categoryId = $request->input('id_category');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Ambil input per page
+        $perPage = $request->input('per_page', 10);
+
+        // Pastikan perPage adalah salah satu dari opsi yang valid (keamanan)
+        if (!in_array($perPage, [5, 10, 25, 50, 100, 150, 200])) {
+            $perPage = 10;
+        }
+
+        // Query basic
+        $query = Item::with('category');
+
+        // var_dump($query);
+        // die();
+
+        // Search
+        $query->when($search, function ($q) use ($search) {
+            return $q->where(function ($subQ) use ($search) {
+                $subQ->where('item_name', 'like', '%' . $search . '%')
+                     ->orWhere('item_code', 'like', '%' . $search . '%');
+            });
+        });
+
+        // Filter
+        $query->when($categoryId, function ($q) use ($categoryId) {
+            return $q->where('id_category', $categoryId);
+        });
+
+        // Logika filter tanggal
+        if ($startDate && $endDate) {
+            $query->whereDate('created_at', '>=', $startDate)
+                  ->whereDate('created_at', '<=', $endDate);
+        }
+
+        // Paginasi
+        $items = $query->latest()->paginate(10)->withQueryString();
+        $categories = Category::orderBy('category_name')->get();
+
+        // Ini untuk show data
+        $items = $query->latest()->paginate($perPage)->withQueryString();
+        $categories = Category::orderBy('category_name')->get();
+
+        // Kirim data ke view
+        return view('items.index', compact('items', 'categories', 'search', 'categoryId'));
     }
 
     /**
