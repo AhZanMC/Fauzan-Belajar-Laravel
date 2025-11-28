@@ -42,7 +42,6 @@
                         </div>
                         <select name="id_category" id="id_category" class="block w-full pl-10 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition duration-150 ease-in-out">
                             <option value="">Semua Kategori</option>
-                            <!-- Pastikan variabel $categories dikirim dari controller -->
                             @if(isset($categories))
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id_category }}" {{ request('id_category') == $category->id_category ? 'selected' : '' }}>
@@ -84,11 +83,11 @@
                 </div>
             </div>
             
-            <!-- Baris Bawah: Reset & Limit Dropdown -->
-            <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center">
+            <!-- Baris Bawah: Reset & Export & Limit -->
+            <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 
                 <!-- Bagian Kiri: Tombol Reset -->
-                <div>
+                <div class="w-full md:w-auto">
                     @if(request('search') || request('id_category') || request('start_date') || request('end_date') || request('per_page'))
                         <a href="{{ route('items.index') }}" class="inline-flex items-center text-sm text-red-500 hover:text-red-700 font-medium transition duration-150 ease-in-out">
                             <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -97,20 +96,32 @@
                     @endif
                 </div>
 
-                <!-- Bagian Kanan: Limit Data (Tampilkan X per halaman) -->
-                <div class="flex items-center mt-3 md:mt-0">
-                    <label for="per_page" class="text-sm text-gray-600 mr-2">Tampilkan:</label>
-                    <!-- UPDATE: Mengganti name="limit" menjadi name="per_page" agar sesuai dengan controller -->
-                    <select name="per_page" id="per_page" onchange="this.form.submit()" 
-                            class="block w-24 py-1 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                        <option value="100" {{ request('per_page') == 150 ? 'selected' : '' }}>150</option>
-                        <option value="100" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
-                    </select>
-                    <span class="text-sm text-gray-600 ml-2">data</span>
+                <!-- Bagian Kanan: Export & Per Page -->
+                <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                    
+                    <!-- Tombol Export PDF -->
+                    <a href="{{ route('items.export.pdf', request()->all()) }}" target="_blank" class="w-full md:w-auto inline-flex justify-center items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:border-red-700 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Export PDF
+                    </a>
+
+                    <!-- Tombol Export Excel -->
+                    <a href="{{ route('items.export.excel', request()->all()) }}" target="_blank" class="w-full md:w-auto inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 focus:outline-none focus:border-green-700 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Export Excel
+                    </a>
+
+                    <!-- Limit Data -->
+                    <div class="flex items-center">
+                        <label for="per_page" class="text-sm text-gray-600 mr-2 whitespace-nowrap">Show:</label>
+                        <select name="per_page" id="per_page" onchange="this.form.submit()" 
+                                class="block w-20 py-1 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </form>
