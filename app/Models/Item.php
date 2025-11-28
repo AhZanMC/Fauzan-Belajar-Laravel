@@ -22,6 +22,7 @@ class Item extends Model
         'item_code',
         'item_name',
         'description',
+        'image',
         'stock',
         'price',
         'id_category', // Tambahkan kolom kategori jika ada relasi

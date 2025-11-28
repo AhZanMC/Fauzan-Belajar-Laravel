@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 // Import Library Dompdf
 use Barryvdh\DomPDF\Facade\Pdf;
+// Untuk penyimpanan file
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -83,10 +85,18 @@ class ItemController extends Controller
             'stock' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:2048',
         ]);
 
         // Simpan data baru
-        Item::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            // Simpan ke folder public/uploads
+            $imagePath = $request->file('image')->store('items', 'public');
+        }
+
+        Item::create($data);
 
         return redirect()->route('items.index')
                          ->with('success', 'Barang baru berhasil ditambahkan.');
@@ -122,10 +132,25 @@ class ItemController extends Controller
             'stock' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:2048',
         ]);
 
         // Update data
-        $item->update($request->all());
+        $data = $request->all();
+
+        // Logika Ganti Gambar
+        if ($request->hasFile('image')) {
+            // 1. Hapus gambar lama jika ada
+            if ($item->image && Storage::disk('public')->exists($item->image)) {
+                Storage::disk('public')->delete($item->image);
+            }
+            
+            // 2. Upload gambar baru
+            $imagePath = $request->file('image')->store('items', 'public');
+            $data['image'] = $imagePath;
+        }
+
+        $item->update($data);
 
         return redirect()->route('items.index')
                          ->with('success', 'Data barang berhasil diperbarui.');
@@ -136,6 +161,11 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
+        // Hapus gambar dari penyimpanan jika ada
+        if ($item->image && Storage::disk('public')->exists($item->image)) {
+            Storage::disk('public')->delete($item->image);
+        }
+
         $item->delete();
 
         return redirect()->route('items.index')
