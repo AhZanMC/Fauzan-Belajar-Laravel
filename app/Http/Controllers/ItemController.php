@@ -94,6 +94,7 @@ class ItemController extends Controller
         if ($request->hasFile('image')) {
             // Simpan ke folder public/uploads
             $imagePath = $request->file('image')->store('items', 'public');
+            $data['image'] = $imagePath;
         }
 
         Item::create($data);
